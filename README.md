@@ -1,8 +1,8 @@
-# Safepay Backend Engineer Takehome Test
+# Coin-Route: Cryptocurrency Exchange Price Optimizer
 
 ## Overview
 
-This project is a takehome test for candidates applying for a backend engineer position at Safepay. The objective is to create a JSON API that determines the best cryptocurrency exchange (Coinbase or Binance) to buy a specified amount of Bitcoin (BTC) in terms of US Dollars (USD) or Tether (USDT). This README provides an in-depth explanation of the project's structure, functionality, and implementation details.
+Coin-Route is a lightweight JSON API designed to help users find the best cryptocurrency exchange to buy a specified amount of Bitcoin (BTC) with minimal USD or USDT expenditure. This README provides a comprehensive guide to understanding, setting up, and extending Coin-Route.
 
 ## Project Structure
 
@@ -24,13 +24,13 @@ This project is a takehome test for candidates applying for a backend engineer p
 
 ### Components
 
-- `main.go`: The entry point of the application.
-- `backend/`: Contains backend logic.
-  - `btc_amount.go`: Extracts the BTC amount from the API request.
-  - `coinbase.go`: Makes API calls to Coinbase exchange.
-  - `exchange.go`: Defines the routing and API response structure.
-  - `usd_amount.go`: Calculates the lowest USD amount for a given BTC amount.
-- `structs/`: Contains data structures.
+- `main.go`: Entry point of the application.
+- `backend/`: Backend logic for API endpoints.
+  - `btc_amount.go`: Extracts BTC amount from the request.
+  - `coinbase.go`: Handles API calls to Coinbase.
+  - `exchange.go`: Defines API routing and responses.
+  - `usd_amount.go`: Calculates lowest USD amount for a given BTC amount.
+- `structs/`: Data structures used in the application.
   - `structs.go`: Defines `Response` and `APIResponse` structs.
 
 ## API Endpoints
@@ -40,7 +40,7 @@ This project is a takehome test for candidates applying for a backend engineer p
 - **URL**: `/exchange-routing`
 - **Method**: `GET`
 - **Parameters**: 
-  - `amount`: The amount of Bitcoin to buy (in BTC).
+  - `amount`: Amount of Bitcoin to buy (in BTC).
 
 #### Example
 
@@ -60,58 +60,59 @@ curl http://localhost:4000/exchange-routing?amount=1
 
 ## Detailed Working
 
-### 1. BTC Amount Extraction (`btc_amount.go`)
+### 1. BTC Amount Extraction
 
 - **Function**: `TakeBTCAmount(w http.ResponseWriter, r *http.Request) float64`
   
 - **Workflow**:
   - Extracts the BTC amount from the query parameter `amount`.
   - Validates the amount format and returns it as a float64 value.
-  - If the amount is missing or invalid, it responds with an appropriate HTTP error.
+  - Responds with an HTTP error if the amount is missing or invalid.
 
-### 2. API Call to Coinbase (`coinbase.go`)
+### 2. API Call to Coinbase
 
 - **Function**: `CoinbaseAPICall() (*structs.APIResponse, error)`
 
 - **Workflow**:
   - Constructs an HTTP GET request to Coinbase's API endpoint.
   - Sends the request and receives the order book response.
-  - Parses the JSON response into an `APIResponse` struct defined in `structs.go`.
+  - Parses the JSON response into an `APIResponse` struct.
 
-### 3. Calculate Lowest USD Amount (`usd_amount.go`)
+### 3. Calculate Lowest USD Amount
 
 - **Function**: `GiveUSDAmount(w http.ResponseWriter, btcAmount float64) float64`
 
 - **Workflow**:
-  - Calls `CoinbaseAPICall` to get the order book.
+  - Calls `CoinbaseAPICall` to fetch the order book.
   - Iterates over the `Asks` in the order book to find the lowest USD amount for the given BTC amount.
   - Returns the lowest USD amount.
   - Handles potential errors such as invalid data or no suitable ask found.
 
-### 4. Exchange Routing (`exchange.go`)
+### 4. Exchange Routing
 
 - **Function**: `ExchangeRouting(w http.ResponseWriter, r *http.Request)`
 
 - **Workflow**:
   - Calls `TakeBTCAmount` to get the BTC amount.
-  - Calls `GiveUSDAmount` to get the lowest USD amount.
-  - Constructs the API response with `BTCAmount`, `USDAmount`, and `exchange` (currently set to "coinbase").
-  - Sends the JSON response with the HTTP status code 200.
+  - Calls `GiveUSDAmount` to calculate the lowest USD amount.
+  - Constructs the API response with `BTCAmount`, `USDAmount`, and `exchange`.
+  - Sends the JSON response with HTTP status code 200.
 
 ## Adding Binance Support
 
-To support Binance, you would need to:
+To support Binance, additional steps would be required:
 
-1. Implement a similar API call function to fetch the order book from Binance.
-2. Modify `GiveUSDAmount` to compare the results from both Coinbase and Binance to find the best USD amount.
-3. Update `ExchangeRouting` to incorporate the logic for comparing and determining the best exchange.
+1. Implement an API call function to fetch the order book from Binance.
+2. Modify `GiveUSDAmount` to compare results from both Coinbase and Binance.
+3. Update `ExchangeRouting` to determine the best exchange for the user.
 
 ## Setup and Run
 
 1. Clone the repository:
 
 ```bash
-git clonehttps://github.com/ibilalkayy/safepay-test
+git clone <repository_url>
+cd <repository_directory>
 ```
 
 2. Run the application:
@@ -130,7 +131,3 @@ The server will start listening on port `4000`.
 ## License
 
 This project is licensed under the Apache-2.0 License. See the [LICENSE](LICENSE) file for details.
-
----
-
-If you have any questions or need further clarification, feel free to reach out! 😊
