@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/safepay/safepay-test/structs"
+	"github.com/ibilalkayy/coin-route/structs"
 )
 
 func ExchangeRouting(w http.ResponseWriter, r *http.Request) {

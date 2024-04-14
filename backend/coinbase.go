@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/safepay/safepay-test/structs"
+	"github.com/ibilalkayy/coin-route/structs"
 )
 
 func CoinbaseAPICall() (*structs.APIResponse, error) {

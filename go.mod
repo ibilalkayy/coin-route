@@ -1,3 +1,3 @@
-module github.com/safepay/safepay-test
+module github.com/ibilalkayy/coin-route
 
 go 1.21.6

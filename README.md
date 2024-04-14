@@ -111,8 +111,7 @@ To support Binance, additional steps would be required:
 1. Clone the repository:
 
 ```bash
-git clone <repository_url>
-cd <repository_directory>
+git clone https://github.com/ibilalkayy/coin-route
 ```
 
 2. Run the application:
