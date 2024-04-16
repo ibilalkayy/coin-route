@@ -1,8 +1,8 @@
-# Coin-Route: Cryptocurrency Exchange Price Optimizer
+# Coin-Route: Optimizing the Crypto Exchange Rates 📈
 
 ## Overview
 
-Coin-Route is a lightweight JSON API designed to help users find the best cryptocurrency exchange to buy a specified amount of Bitcoin (BTC) with minimal USD or USDT expenditure. This README provides a comprehensive guide to understanding, setting up, and extending Coin-Route.
+Coin-Route is a dynamic JSON API designed to find the best cryptocurrency exchange to purchase Bitcoin (BTC) with the lowest USD or USDT expenditure. This updated README provides a comprehensive guide on the project's structure, functionalities, and integration of both Coinbase and Bitfinex exchanges.
 
 ## Project Structure
 
@@ -11,11 +11,11 @@ Coin-Route is a lightweight JSON API designed to help users find the best crypto
 |-- LICENSE
 |-- README.md
 |-- backend/
+|   |-- bitfinex.go
 |   |-- btc_amount.go
 |   |-- coinbase.go
 |   |-- exchange.go
 |   |-- usd_amount.go
-|-- database/
 |-- go.mod
 |-- main.go
 |-- structs/
@@ -25,11 +25,12 @@ Coin-Route is a lightweight JSON API designed to help users find the best crypto
 ### Components
 
 - `main.go`: Entry point of the application.
-- `backend/`: Backend logic for API endpoints.
+- `backend/`: Contains backend logic for API endpoints.
+  - `bitfinex.go`: Handles API calls to Bitfinex.
   - `btc_amount.go`: Extracts BTC amount from the request.
   - `coinbase.go`: Handles API calls to Coinbase.
   - `exchange.go`: Defines API routing and responses.
-  - `usd_amount.go`: Calculates lowest USD amount for a given BTC amount.
+  - `usd_amount.go`: Calculates the lowest USD amount for a given BTC amount.
 - `structs/`: Data structures used in the application.
   - `structs.go`: Defines `Response` and `APIResponse` structs.
 
@@ -69,42 +70,52 @@ curl http://localhost:4000/exchange-routing?amount=1
   - Validates the amount format and returns it as a float64 value.
   - Responds with an HTTP error if the amount is missing or invalid.
 
-### 2. API Call to Coinbase
+### 2. API Calls to Coinbase and Bitfinex
 
-- **Function**: `CoinbaseAPICall() (*structs.APIResponse, error)`
+#### Coinbase API 📖
+- Documentation: [Coinbase API Reference](https://docs.cloud.coinbase.com/exchange/reference/exchangerestapi_getproductbook)
 
+#### Bitfinex API 📖
+- Documentation: [Bitfinex API Reference](https://docs.bitfinex.com/reference/rest-public-ticker)
+
+#### Bitfinex API Calls (`bitfinex.go`)
+- **Function**: `getBTCUSD() (float64, error)`
+  
 - **Workflow**:
-  - Constructs an HTTP GET request to Coinbase's API endpoint.
-  - Sends the request and receives the order book response.
-  - Parses the JSON response into an `APIResponse` struct.
+  - Fetches the BTC/USD rate from Bitfinex's ticker API.
+  - Returns the last traded price as a float64 value.
 
-### 3. Calculate Lowest USD Amount
+### 3. Calculate Lowest USD Amounts
 
+#### Coinbase (`usd_amount.go`)
 - **Function**: `GiveUSDAmount(w http.ResponseWriter, btcAmount float64) float64`
 
 - **Workflow**:
-  - Calls `CoinbaseAPICall` to fetch the order book.
-  - Iterates over the `Asks` in the order book to find the lowest USD amount for the given BTC amount.
-  - Returns the lowest USD amount.
-  - Handles potential errors such as invalid data or no suitable ask found.
+  - Fetches the order book from Coinbase using `CoinbaseAPICall()`.
+  - Finds the lowest USD amount for the given BTC amount.
 
-### 4. Exchange Routing
+#### Bitfinex (`bitfinex.go`)
+- **Function**: `BitfinexAPICall(btcAmount float64) float64`
+
+- **Workflow**:
+  - Calculates the USD value for the given BTC amount using the Bitfinex API.
+
+### 4. Exchange Rate Comparison
+
+- **Function**: `TwoAmountsComparison(w http.ResponseWriter, btcAmount float64) (float64, string)`
+
+- **Workflow**:
+  - Compares the USD amounts from Coinbase and Bitfinex.
+  - Determines the exchange with the lowest USD amount.
+
+### 5. Exchange Routing (`exchange.go`)
 
 - **Function**: `ExchangeRouting(w http.ResponseWriter, r *http.Request)`
 
 - **Workflow**:
-  - Calls `TakeBTCAmount` to get the BTC amount.
-  - Calls `GiveUSDAmount` to calculate the lowest USD amount.
+  - Orchestrates the entire process by calling BTC extraction, USD calculations, and exchange rate comparison.
   - Constructs the API response with `BTCAmount`, `USDAmount`, and `exchange`.
   - Sends the JSON response with HTTP status code 200.
-
-## Adding Binance Support
-
-To support Binance, additional steps would be required:
-
-1. Implement an API call function to fetch the order book from Binance.
-2. Modify `GiveUSDAmount` to compare results from both Coinbase and Binance.
-3. Update `ExchangeRouting` to determine the best exchange for the user.
 
 ## Setup and Run
 
@@ -125,7 +136,20 @@ The server will start listening on port `4000`.
 ## Dependencies
 
 - Go standard library
-- `github.com/safepay/safepay-test/structs`: Custom structs for API response
+- `github.com/ibilalkayy/coin-route/structs`: Custom structs for API response
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+---
+
+For further details or queries, refer to the API documentation links or the source code. Enjoy optimizing exchange rates with Coin-Route! 🚀
+
+## Dependencies
+
+- Go standard library
+- `github.com/ibilalkayy/coin-route/structs`: Custom structs for API response
 
 ## License
 

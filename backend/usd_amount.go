@@ -12,33 +12,23 @@ func GiveUSDAmount(w http.ResponseWriter, btcAmount float64) float64 {
 		return 0
 	}
 
-	var lowestUSDAmount float64
-	lowestUSDAmountFound := false
-
+	var usdAmount float64
 	for _, ask := range apiResponse.Asks {
+		// Convert the BTC amount from string to float64
 		askBTC, err := strconv.ParseFloat(ask[1], 64)
 		if err != nil {
 			continue
 		}
 
-		askUSD, err := strconv.ParseFloat(ask[0], 64)
-		if err != nil {
-			http.Error(w, "Invalid USD amount format", http.StatusInternalServerError)
-			return 0
-		}
-
-		if askBTC >= btcAmount {
-			if !lowestUSDAmountFound || askUSD < lowestUSDAmount {
-				lowestUSDAmount = askUSD
-				lowestUSDAmountFound = true
+		if askBTC == btcAmount {
+			// Convert the USD amount from string to float64
+			usdAmount, err = strconv.ParseFloat(ask[0], 64)
+			if err != nil {
+				http.Error(w, "Invalid USD amount format", http.StatusInternalServerError)
+				return 0
 			}
+			break
 		}
 	}
-
-	if !lowestUSDAmountFound {
-		http.Error(w, "No suitable ask found for the specified BTC amount", http.StatusInternalServerError)
-		return 0
-	}
-
-	return lowestUSDAmount
+	return usdAmount
 }
