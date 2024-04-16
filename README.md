@@ -85,7 +85,16 @@ curl http://localhost:4000/exchange-routing?amount=1
   - Fetches the BTC/USD rate from Bitfinex's ticker API.
   - Returns the last traded price as a float64 value.
 
-### 3. Calculate Lowest USD Amounts
+### 3. Calculate BTC Value in USD
+
+#### Bitfinex (`bitfinex.go`)
+- **Function**: `calculateBTCValueInUSD(btcAmount float64) (float64, error)`
+
+- **Workflow**:
+  - Fetches the current BTC/USD rate using getBTCUSD().
+  - Calculates the equivalent USD value for the given BTC amount.
+
+### 4. Calculate Lowest USD Amounts
 
 #### Coinbase (`usd_amount.go`)
 - **Function**: `GiveUSDAmount(w http.ResponseWriter, btcAmount float64) float64`
@@ -100,7 +109,7 @@ curl http://localhost:4000/exchange-routing?amount=1
 - **Workflow**:
   - Calculates the USD value for the given BTC amount using the Bitfinex API.
 
-### 4. Exchange Rate Comparison
+### 5. Exchange Rate Comparison
 
 - **Function**: `TwoAmountsComparison(w http.ResponseWriter, btcAmount float64) (float64, string)`
 
@@ -108,7 +117,7 @@ curl http://localhost:4000/exchange-routing?amount=1
   - Compares the USD amounts from Coinbase and Bitfinex.
   - Determines the exchange with the lowest USD amount.
 
-### 5. Exchange Routing (`exchange.go`)
+### 6. Exchange Routing (`exchange.go`)
 
 - **Function**: `ExchangeRouting(w http.ResponseWriter, r *http.Request)`
 
