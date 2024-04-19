@@ -3,13 +3,17 @@ package backend
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/ibilalkayy/coin-route/structs"
 )
 
 func TwoAmountsComparison(w http.ResponseWriter, btcAmount float64) (float64, string) {
-	coinbaseUsdAmount := GiveUSDAmount(w, btcAmount)
+	coinbaseUsdAmount, err := GetUSDFromBTC(btcAmount)
+	if err != nil {
+		log.Fatal(err)
+	}
 	bitfinexUsdAmount := BitfinexAPICall(btcAmount)
 
 	var min float64
